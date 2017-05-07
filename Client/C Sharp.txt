@@ -1,0 +1,23 @@
+        private string SlashIO(string SLASH_INPUT)
+        {
+            string SLASH_UDP_HOSTNAME = "slashapi.tk";
+            var SLASH_UDP_IP_UNPARSED = Dns.GetHostAddresses(SLASH_UDP_HOSTNAME)[0];
+            IPAddress SLASH_UDP_IP_PARSED = IPAddress.Parse(SLASH_UDP_IP_UNPARSED.ToString());
+            int SLASH_UDP_PORT = 6754;
+ 
+            IPEndPoint SLASH_ENDPOINT = new IPEndPoint(SLASH_UDP_IP_PARSED, SLASH_UDP_PORT);
+ 
+            string SLASH_KEY = "";
+            SLASH_INPUT = "<key>" + SLASH_KEY + "</key>\n<data>" + SLASH_INPUT + "</data>";
+ 
+            string SLASH_RESPONSE = string.Empty;
+ 
+            using (UdpClient client = new UdpClient(SLASH_UDP_PORT))
+            {
+                byte[] SLASH_DATA = Encoding.UTF8.GetBytes(SLASH_INPUT);
+                client.Send(SLASH_DATA, SLASH_DATA.Length, SLASH_ENDPOINT);
+                SLASH_RESPONSE = Encoding.UTF8.GetString(client.Receive(ref SLASH_ENDPOINT));
+            }
+ 
+            return SLASH_RESPONSE;
+        }

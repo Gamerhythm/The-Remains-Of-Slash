@@ -1,0 +1,66 @@
+import pip
+import logging
+import socket
+
+logging.basicConfig(level=logging.INFO)
+
+def install(package):
+    pip.main(['install', package])
+
+try:
+    from profanity import profanity
+except:
+    install('profanity')
+    from profanity import profanity
+
+try:
+    from chatterbot.trainers import ChatterBotCorpusTrainer
+    from chatterbot import ChatBot
+except:
+    install('chatterbot')
+    from chatterbot.trainers import ChatterBotCorpusTrainer
+    from chatterbot import ChatBot
+
+bot = ChatBot('Slash',
+    storage_adapter='chatterbot.storage.MongoDatabaseAdapter',
+    database='slash-database'
+)
+bot.set_trainer(ChatterBotCorpusTrainer)
+bot.train(
+    "chatterbot.corpus.english.greetings",
+    "chatterbot.corpus.english.conversations"
+)
+
+cw = [line.rstrip('\n') for line in open('controversialwords.txt')]
+profanity.load_words(cw)
+NaziSymbol = "卐"
+
+print("Started!")
+
+UDP_PORT = 6754
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(("", UDP_PORT))
+
+while True:
+    data, addr = sock.recvfrom(1024)
+    datadecode = data.decode()
+    addr = str(addr)
+    char1 = """('"""
+    char2 = """',"""
+    addr = str(addr[addr.find(char1)+2 : addr.find(char2)])
+    print("Data received from " + addr + "! DATA: " + datadecode)
+    if datadecode == "reload":
+        cw = [line.rstrip('\n') for line in open('controversialwords.txt')]
+        profanity.load_words(cw)
+        response = "Controversial word list reloaded!"
+    elif profanity.contains_profanity(datadecode) or NaziSymbol in datadecode:
+        response = "ERROR: You cannot send controversial messages using this bot."
+    else:
+        response = str(bot.get_response(datadecode))
+        if profanity.contains_profanity(response):
+            response = str(profanity.censor(response))
+    if addr == "127.0.0.1":
+        print("Please do not run applications that use the Slash API on the same machine as the server!")
+    else:
+        sock.sendto(response.encode(), (addr, UDP_PORT))

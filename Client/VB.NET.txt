@@ -1,0 +1,21 @@
+    Private Function SlashIO(SLASH_INPUT As String) As String
+        Dim SLASH_UDP_HOSTNAME As String = "slashapi.tk"
+        Dim SLASH_UDP_IP_UNPARSED = Dns.GetHostAddresses(SLASH_UDP_HOSTNAME)(0)
+        Dim SLASH_UDP_IP_PARSED As IPAddress = IPAddress.Parse(SLASH_UDP_IP_UNPARSED.ToString())
+        Dim SLASH_UDP_PORT As Integer = 6754
+ 
+        Dim SLASH_ENDPOINT As New IPEndPoint(SLASH_UDP_IP_PARSED, SLASH_UDP_PORT)
+ 
+        Dim SLASH_KEY As String = ""
+        SLASH_INPUT = "<key>" + SLASH_KEY + "</key>" + "<data>" + SLASH_INPUT + "</data>"
+ 
+        Dim SLASH_RESPONSE As String = String.Empty
+ 
+        Using client As New UdpClient(SLASH_UDP_PORT)
+            Dim SLASH_DATA As Byte() = Encoding.UTF8.GetBytes(SLASH_INPUT)
+            client.Send(SLASH_DATA, SLASH_DATA.Length, SLASH_ENDPOINT)
+            SLASH_RESPONSE = Encoding.UTF8.GetString(client.Receive(SLASH_ENDPOINT))
+        End Using
+ 
+        Return SLASH_RESPONSE
+    End Function

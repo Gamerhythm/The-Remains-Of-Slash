@@ -1,0 +1,5 @@
+# The Remains Of Slash
+
+Well all good things come to an end. Time to say goodbye to Slash. Please note a few things. Further than this readme, I won't be giving any more support. I have quite frankly put too much time into this and don't want to put anymore in. Next, the clients will not work because they have not been touched since Slash was running. You will need to put your own IP into them. Also, I lost the original C# code for the desktop client sadly. The server will need Python and MongoDB installed. The server might run stock with these installed, I did make one simple tweak to make it not crash looking for the other server but I strongly suggest you have some Python knowledge so you can take all the muti-server bits out. Final note is I cannot be 100% sure that the MongoDB is clean of racism and bad language because I have not checked it. Other than that, enjoy, and I will miss you Slash. The Slash discord bot will be switching to the Google Assistant API soon.
+
+-Jake
